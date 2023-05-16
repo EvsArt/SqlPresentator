@@ -1,4 +1,4 @@
-package data.model;
+package com.artevseev.sqlcrudpresentation.data.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -14,5 +14,6 @@ public class Order {
     private String comment;
     private Date orderTime;
     private Boolean isFinished;
+    private Long restaurantId;
 
 }
