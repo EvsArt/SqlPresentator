@@ -75,12 +75,13 @@ public class WorkerRepositoryImpl implements WorkerRepository{
 
         try (Connection connection = DriverManager.getConnection(dbUrl, username, password);
              PreparedStatement statement = connection.prepareStatement(
-                     "INSERT INTO worker VALUES(name=?, post_id=?, restaurant_id=?, employment_date=?)"))
+                     "INSERT INTO worker(name, post_id, restaurant_id, employment_date) VALUES(?, ?, ?, ?)"))
         {
             statement.setString(1, worker.getName());
             statement.setInt(2, worker.getPostId());
             statement.setLong(3, worker.getRestaurantId());
-            statement.setLong(4, worker.getEmploymentDate().getTime());
+            statement.setDate(4,
+                    (worker.getEmploymentDate() != null) ? new java.sql.Date(worker.getEmploymentDate().getTime()) : null);
             statement.executeUpdate();
 
         } catch (SQLException e) {
@@ -157,17 +158,39 @@ public class WorkerRepositoryImpl implements WorkerRepository{
 
     }
 
+    @Override
+    public boolean existByName(String name) {
+
+        ResultSet resultSet;
+
+        try (Connection connection = DriverManager.getConnection(dbUrl, username, password);
+             PreparedStatement statement = connection.prepareStatement("select * from worker where name=?")) {
+
+            statement.setString(1, String.valueOf(name));
+            resultSet = statement.executeQuery();
+
+            return getWorkerFromResultSet(resultSet).isPresent();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
+
+    }
+
     private List<Worker> getListFromResultSet(ResultSet resultSet) throws SQLException{
 
         List<Worker> workerList = new ArrayList<>();
         while (resultSet.next()){
+            java.sql.Date dateFromRaw = resultSet.getDate("employment_date");
             workerList.add(new Worker(
                     resultSet.getLong("id"),
                     resultSet.getString("name"),
                     resultSet.getInt("post_id"),
                     resultSet.getLong("restaurant_id"),
-                    new Date(resultSet.getLong("employment_date")))
-            );
+                    (dateFromRaw != null) ?
+                            new Date(dateFromRaw.getTime()) : null
+            ));
         }
         return workerList;
     }
@@ -176,12 +199,14 @@ public class WorkerRepositoryImpl implements WorkerRepository{
 
         Worker worker = null;
         if (resultSet.next()) {
+            java.sql.Date dateFromRaw = resultSet.getDate("employment_date");
             worker = new Worker(
                     resultSet.getLong("id"),
                     resultSet.getString("name"),
                     resultSet.getInt("post_id"),
                     resultSet.getLong("restaurant_id"),
-                    new Date(resultSet.getLong("employment_date"))
+                    (dateFromRaw != null) ?
+                        new Date(dateFromRaw.getTime()) : null
             );
         }
         return Optional.ofNullable(worker);

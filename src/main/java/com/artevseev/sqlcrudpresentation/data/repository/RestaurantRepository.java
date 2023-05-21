@@ -11,5 +11,6 @@ public interface RestaurantRepository extends BaseRepository<Restaurant, Long> {
     Optional<Restaurant> findByName(String name);
     List<Restaurant> findWithoutActiveOrders();
     List<RestStat> getTopRestaurants();
+    boolean existByName(String name);
 
 }

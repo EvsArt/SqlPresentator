@@ -8,6 +8,7 @@ import java.util.Date;
 import java.util.List;
 
 @RestController
+@RequestMapping("/worker")
 public class WorkerController {
 
     private final WorkerRepository workerRepository;

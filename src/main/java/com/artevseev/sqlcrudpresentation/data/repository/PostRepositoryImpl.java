@@ -75,7 +75,7 @@ public class PostRepositoryImpl implements PostRepository{
     public Optional<Post> save(Post post) {
 
         try (Connection connection = DriverManager.getConnection(dbUrl, username, password);
-             PreparedStatement statement = connection.prepareStatement("INSERT INTO post VALUES(name=?)"))
+             PreparedStatement statement = connection.prepareStatement("INSERT INTO post(name) VALUES(?)"))
         {
 
             statement.setString(1, post.getName());
@@ -112,6 +112,26 @@ public class PostRepositoryImpl implements PostRepository{
     @Override
     public List<String> findAllPostNames() {
         return null;
+    }
+
+    @Override
+    public boolean existByName(String name) {
+
+        ResultSet resultSet;
+
+        try (Connection connection = DriverManager.getConnection(dbUrl, username, password);
+             PreparedStatement statement = connection.prepareStatement("select * from post where name=?")) {
+
+            statement.setString(1, String.valueOf(name));
+            resultSet = statement.executeQuery();
+
+            return getPostFromResultSet(resultSet).isPresent();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
+
     }
 
     private List<Post> getListFromResultSet(ResultSet resultSet) throws SQLException{

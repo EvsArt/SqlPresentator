@@ -11,5 +11,6 @@ public interface FoodRepository extends BaseRepository<Food, Integer>{
     Optional<Food> findByName(String name);
     List<String> findAllNames();
     List<FoodStat> getTopFood();
+    boolean existByName(String name);
 
 }

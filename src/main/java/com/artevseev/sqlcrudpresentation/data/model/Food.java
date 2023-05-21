@@ -7,7 +7,7 @@ import org.jetbrains.annotations.NotNull;
 
 @Data
 @AllArgsConstructor
-@RequiredArgsConstructor
+//@RequiredArgsConstructor
 public class Food {
 
     private Integer id;

@@ -6,6 +6,7 @@ import org.springframework.stereotype.Repository;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -74,21 +75,25 @@ public class OrderRepositoryImpl implements OrderRepository{
     @Override
     public Optional<Order> save(Order order) {
 
+        Date date = new Date();
+
         try (Connection connection = DriverManager.getConnection(dbUrl, username, password);
              PreparedStatement statement = connection.prepareStatement(
-                     "INSERT INTO \"order\"(type, comment, order_time, is_finished) VALUES(?, ?, ?, ?)"))
+                     "INSERT INTO \"order\"(type, comment, order_time, is_finished, restaurant_id) VALUES(?, ?, ?, ?, ?)"))
         {
             statement.setInt(1, order.getType());
             statement.setString(2, order.getComment());
-            statement.setLong(3, order.getOrderTime().getTime());
-            statement.setBoolean(4, order.getIsFinished());
+            statement.setDate(3, (order.getOrderTime() != null) ?
+                    new java.sql.Date(order.getOrderTime().getTime()) : new java.sql.Date(date.getTime()));
+            statement.setBoolean(4, (order.getIsFinished() != null) ? order.getIsFinished() : false);
+            statement.setLong(5, order.getRestaurantId());
             statement.executeUpdate();
 
         } catch (SQLException e) {
             e.printStackTrace();
         }
 
-        return findByOrderTime(order.getOrderTime());
+        return findByOrderTime((order.getOrderTime() != null) ? order.getOrderTime() : date);
 
     }
 
@@ -101,7 +106,7 @@ public class OrderRepositoryImpl implements OrderRepository{
                      "select * from \"order\" where order_time=?"
              )){
 
-            statement.setLong(1, orderTime.getTime());
+            statement.setDate(1, new java.sql.Date(orderTime.getTime()));
             resultSet = statement.executeQuery();
 
             return getOrderFromResultSet(resultSet);
@@ -194,11 +199,13 @@ public class OrderRepositoryImpl implements OrderRepository{
 
         List<Order> orderList = new ArrayList<>();
         while (resultSet.next()){
+            java.sql.Date dateFromRaw = resultSet.getDate("order_time");
             orderList.add(new Order(
                     Long.parseLong(resultSet.getString("id")),
                     Integer.parseInt(resultSet.getString("type")),
                     resultSet.getString("comment"),
-                    resultSet.getDate("order_time"),
+                    (dateFromRaw != null) ?
+                            new Date(dateFromRaw.getTime()) : null,
                     resultSet.getBoolean("is_finished"),
                     resultSet.getLong("restaurant_id"))
             );
@@ -210,11 +217,13 @@ public class OrderRepositoryImpl implements OrderRepository{
 
         Order order = null;
         if (resultSet.next()) {
+            java.sql.Date dateFromRaw = resultSet.getDate("order_time");
             order = new Order(
                     Long.parseLong(resultSet.getString("id")),
                     Integer.parseInt(resultSet.getString("type")),
                     resultSet.getString("comment"),
-                    resultSet.getDate("order_time"),
+                    (dateFromRaw != null) ?
+                            new Date(dateFromRaw.getTime()) : null,
                     resultSet.getBoolean("is_finished"),
                     resultSet.getLong("restaurant_id")
             );

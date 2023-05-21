@@ -9,5 +9,6 @@ public interface PostRepository extends BaseRepository<Post, Integer> {
 
     Optional<Post> findByName(String name);
     List<String> findAllPostNames();
+    boolean existByName(String name);
 
 }

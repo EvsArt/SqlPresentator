@@ -8,7 +8,7 @@ import org.jetbrains.annotations.NotNull;
 
 @Data
 @AllArgsConstructor
-@RequiredArgsConstructor
+//@RequiredArgsConstructor
 public class Restaurant {
 
     private Long id;

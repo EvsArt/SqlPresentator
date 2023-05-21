@@ -7,7 +7,7 @@ import org.jetbrains.annotations.NotNull;
 
 @Data
 @AllArgsConstructor
-@RequiredArgsConstructor
+//@RequiredArgsConstructor
 public class Post {
 
     private Integer id;

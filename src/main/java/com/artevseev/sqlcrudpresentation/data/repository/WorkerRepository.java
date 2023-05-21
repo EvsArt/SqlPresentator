@@ -11,5 +11,6 @@ public interface WorkerRepository extends BaseRepository<Worker, Long> {
     Optional<Worker> findByName(String name);
     List<Worker> findAllByPostName(String name);
     List<Worker> findAllInRestaurant(Long id);
+    boolean existByName(String name);
 
 }

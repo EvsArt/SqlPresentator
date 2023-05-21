@@ -158,6 +158,26 @@ public class FoodRepositoryImpl implements FoodRepository {
 
     }
 
+    @Override
+    public boolean existByName(String name) {
+
+        ResultSet resultSet;
+
+        try (Connection connection = DriverManager.getConnection(dbUrl, username, password);
+             PreparedStatement statement = connection.prepareStatement("select * from food where name=?")) {
+
+            statement.setString(1, String.valueOf(name));
+            resultSet = statement.executeQuery();
+
+            return getFoodFromResultSet(resultSet).isPresent();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
+
+    }
+
     private List<Food> getListFromResultSet(ResultSet resultSet) throws SQLException{
 
         List<Food> foodList = new ArrayList<>();

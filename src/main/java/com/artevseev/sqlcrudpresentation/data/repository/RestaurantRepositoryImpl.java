@@ -160,6 +160,26 @@ public class RestaurantRepositoryImpl implements RestaurantRepository{
 
     }
 
+    @Override
+    public boolean existByName(String name) {
+
+        ResultSet resultSet;
+
+        try (Connection connection = DriverManager.getConnection(dbUrl, username, password);
+             PreparedStatement statement = connection.prepareStatement("select * from restaurant where name=?")) {
+
+            statement.setString(1, String.valueOf(name));
+            resultSet = statement.executeQuery();
+
+            return getRestaurantFromResultSet(resultSet).isPresent();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
+
+    }
+
     private List<Restaurant> getListFromResultSet(ResultSet resultSet) throws SQLException{
 
         List<Restaurant> restaurantList = new ArrayList<>();
