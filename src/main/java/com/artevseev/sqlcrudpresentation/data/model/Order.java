@@ -4,7 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Date;
+import java.sql.Time;
+import java.sql.Timestamp;
 
 @Data
 @AllArgsConstructor
@@ -14,7 +15,7 @@ public class Order {
     @NotNull
     private Integer type;
     private String comment;
-    private Date orderTime;
+    private Timestamp orderTime;
     private Boolean isFinished;
     @NotNull
     private Long restaurantId;

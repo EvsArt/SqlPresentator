@@ -83,8 +83,8 @@ public class OrderRepositoryImpl implements OrderRepository{
         {
             statement.setInt(1, order.getType());
             statement.setString(2, order.getComment());
-            statement.setDate(3, (order.getOrderTime() != null) ?
-                    new java.sql.Date(order.getOrderTime().getTime()) : new java.sql.Date(date.getTime()));
+            statement.setTimestamp(3, (order.getOrderTime() != null) ?
+                    new java.sql.Timestamp(order.getOrderTime().getTime()) : new java.sql.Timestamp(date.getTime()));
             statement.setBoolean(4, (order.getIsFinished() != null) ? order.getIsFinished() : false);
             statement.setLong(5, order.getRestaurantId());
             statement.executeUpdate();
@@ -106,7 +106,7 @@ public class OrderRepositoryImpl implements OrderRepository{
                      "select * from \"order\" where order_time=?"
              )){
 
-            statement.setDate(1, new java.sql.Date(orderTime.getTime()));
+            statement.setTimestamp(1, new Timestamp(orderTime.getTime()));
             resultSet = statement.executeQuery();
 
             return getOrderFromResultSet(resultSet);
@@ -199,13 +199,13 @@ public class OrderRepositoryImpl implements OrderRepository{
 
         List<Order> orderList = new ArrayList<>();
         while (resultSet.next()){
-            java.sql.Date dateFromRaw = resultSet.getDate("order_time");
+            java.sql.Timestamp dateFromRaw = resultSet.getTimestamp("order_time");
             orderList.add(new Order(
                     Long.parseLong(resultSet.getString("id")),
                     Integer.parseInt(resultSet.getString("type")),
                     resultSet.getString("comment"),
                     (dateFromRaw != null) ?
-                            new Date(dateFromRaw.getTime()) : null,
+                            new Timestamp(dateFromRaw.getTime()) : null,
                     resultSet.getBoolean("is_finished"),
                     resultSet.getLong("restaurant_id"))
             );
@@ -217,13 +217,13 @@ public class OrderRepositoryImpl implements OrderRepository{
 
         Order order = null;
         if (resultSet.next()) {
-            java.sql.Date dateFromRaw = resultSet.getDate("order_time");
+            java.sql.Timestamp dateFromRaw = resultSet.getTimestamp("order_time");
             order = new Order(
                     Long.parseLong(resultSet.getString("id")),
                     Integer.parseInt(resultSet.getString("type")),
                     resultSet.getString("comment"),
                     (dateFromRaw != null) ?
-                            new Date(dateFromRaw.getTime()) : null,
+                            new Timestamp(dateFromRaw.getTime()) : null,
                     resultSet.getBoolean("is_finished"),
                     resultSet.getLong("restaurant_id")
             );

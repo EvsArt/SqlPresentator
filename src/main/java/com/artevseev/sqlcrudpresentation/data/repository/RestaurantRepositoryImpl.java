@@ -117,8 +117,8 @@ public class RestaurantRepositoryImpl implements RestaurantRepository{
         try (Connection connection = DriverManager.getConnection(dbUrl, username, password);
              PreparedStatement statement = connection.prepareStatement(
                      "select * from restaurant " +
-                     "where id in " +
-                             "(select restaurant_id from \"order\" where not is_finished)"
+                     "where id not in " +
+                             "(select restaurant_id from \"order\" where is_finished = false)"
              );
              ResultSet resultSet = statement.executeQuery()){
 
@@ -138,9 +138,10 @@ public class RestaurantRepositoryImpl implements RestaurantRepository{
              PreparedStatement statement = connection.prepareStatement(
                      "select restaurant.id as id, restaurant.name as name, count(\"order\".id) as count " +
                              "from restaurant " +
-                             "inner join \"order\" " +
+                             "left join \"order\" " +
                              "on restaurant.id = restaurant_id " +
-                             "group by restaurant.id, restaurant.name");
+                             "group by restaurant.id, restaurant.name " +
+                             "order by count desc");
              ResultSet resultSet = statement.executeQuery()){
 
             List<RestStat> restaurantList = new ArrayList<>();
